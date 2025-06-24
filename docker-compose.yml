@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  employee-side:
+    build:
+      context: ./Employee-side
+      dockerfile: Dockerfile
+    container_name: employee_side
+    ports:
+      - "7093:80"
+
+  hr-view:
+    build:
+      context: ./HR-view
+      dockerfile: Dockerfile
+    container_name: hr_view
+    ports:
+      - "7094:80"
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "3300:3300"
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=admin234
+      - DB_NAME=employee_portal
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    ports:
+      - "5015:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin234
+      POSTGRES_DB: employee_portal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
